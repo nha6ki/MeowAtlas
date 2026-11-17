@@ -1,0 +1,32 @@
+{
+  "environment": {
+    "browser": "Chrome on macOS",
+    "viewport": [
+      390,
+      844
+    ],
+    "device_scale_factor": 3,
+    "cpu_slowdown": 4,
+    "cache": "disabled",
+    "network": "local HTTP; no mobile network emulation",
+    "paired_trials": 3
+  },
+  "before": {
+    "javascript_bytes_at_measurement": 6436380,
+    "load_ready_ms_median": 2352.5,
+    "pan_frame_gap_p95_ms_median": 100.09999999999945,
+    "pan_frames_over_50ms_median": 18,
+    "zoom_button_latency_ms_median": 107.15000009536743,
+    "selection_latency_ms_median": 174.5999994277954
+  },
+  "after": {
+    "javascript_bytes_at_measurement": 1362509,
+    "load_ready_ms_median": 655.6999998092651,
+    "pan_frame_gap_p95_ms_median": 33.40000000000009,
+    "pan_frames_over_50ms_median": 1,
+    "zoom_button_latency_ms_median": 101.05000019073486,
+    "selection_latency_ms_median": 143.80000019073486
+  },
+  "limitations": "Synthetic browser measurements, not measurements on a physical phone. Timings vary by device, browser, and network.",
+  "javascript_reduction_percent": 78.8
+}

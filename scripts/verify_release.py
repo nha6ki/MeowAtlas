@@ -50,6 +50,16 @@ def main() -> None:
     raw = (SITE / "data.js").read_text()
     require(raw.startswith("window.MEOW_ATLAS="), "Unexpected data wrapper")
     data = json.loads(raw.removeprefix("window.MEOW_ATLAS=").strip().removesuffix(";"))
+    lean_raw = (SITE / "experience-data.js").read_text()
+    require(lean_raw.startswith("window.MEOW_ATLAS="), "Unexpected Experience data wrapper")
+    lean = json.loads(lean_raw.removeprefix("window.MEOW_ATLAS=").strip().removesuffix(";"))
+    require(lean == {key: value for key, value in data.items() if key not in ("featureOrder", "mapOrder")},
+            "Experience must use the same frozen map and metadata as Analysis")
+    experience_html = (SITE / "index.html").read_text()
+    require('src="experience-data.js"' in experience_html and 'src="data.js"' not in experience_html,
+            "Experience must not load Analysis comparison rankings")
+    require('src="vendor/plotly-basic.min.js"' in experience_html,
+            "Experience must use the smaller scatter-capable Plotly bundle")
     points = data["points"]
     require(len(points) == 440, "Expected 440 recordings")
     require(len({p["id"] for p in points}) == 440, "Duplicate recording IDs")

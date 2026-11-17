@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-preparation",
+  "version": "1.0.1",
   "dataset": "CatMeows v1.0.2",
   "clips": 440,
   "cats": 21,
@@ -474,9 +474,10 @@
     "cat-images/credits.json": "4deab2f69151631f43d145dc5321123fa1573a6f8d4023b3f6e9c12f64723dac",
     "credits.html": "8800d3963eb10a267c2edefd45ea208dbff758cc77b9afbfeea386c13e7d9dd3",
     "data.js": "84ed108c7a158d08112624c766de368d5410ebcccb17fb73aae1e2838d929ed5",
-    "experience.css": "895a8e29e8090f7b998603dbd081df68cda4f95dae0b141a06f625814148c881",
-    "experience.js": "76cb17e35a72654174ffb3a0b1c7775ad15f36670c52b54263f038cc627f696b",
-    "index.html": "3a0e8ef7527b87e06c8d135de18484965c5cec57daff538d029cfb912e40a5f4",
+    "experience-data.js": "f57a3062414c09f57522a010a0152d659406476e8adf7e3913ab1bf902a21ff3",
+    "experience.css": "5384e0da537890719cd0d8940b768172dda610bd0b70b49f2f3542b7c7d59e8b",
+    "experience.js": "5cb54d0dfdaef6fb6b400bb00666efb524eafa67daa0c3aba91fe1bc5fd725bb",
+    "index.html": "1deae40416395810342d86eeb7cb8e6391df6a5b739841106ca101bfd842d88e",
     "spectra/B_ANI01_MC_FN_SIM01_101.png": "b82e0da9200879977846749035e4c5a6f6b3431093d9d9456959a7dbc501910e",
     "spectra/B_ANI01_MC_FN_SIM01_102.png": "20680c92bad0806081acee8074548f5bd35ca577c199e5c1221a4403ae016b35",
     "spectra/B_ANI01_MC_FN_SIM01_103.png": "1e2183d6f4724cdc7ae97e0b6507e578e5352156861a2b3a9bee41f5e1c67a90",
@@ -919,6 +920,7 @@
     "spectra/I_WHO01_MC_FI_SIM01_301.png": "4f207ea6481194720f3b711dfb07e2ac85139205a3d49776e0fa160f6b1cc011",
     "styles.css": "0ada516cad285f13fec7190b5258244dd4689961cfb474ad465eda4614d0acc6",
     "vendor/LICENSE-Plotly.txt": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7",
+    "vendor/plotly-basic.min.js": "99784e3abfb07b142a15e521a439e6d9addceadb3f79553fd24c72774f0649ba",
     "vendor/plotly.min.js": "3b6e15d45dbb7fca5bd2094291e961ddc5472cd887009e6009a56dab668d721f"
   }
 }

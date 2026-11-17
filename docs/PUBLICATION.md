@@ -19,9 +19,10 @@ analysis reproduction code, methods, notices, and validation tooling. Original
 dataset archives, development caches, credentials, experimental outputs and
 unrelated project files are excluded.
 
-The only additions to the completed UI are links to a credits page: inside
-Experience's existing about dialog and in Analysis's footer. Audio, spectrograms,
-coordinates, rankings, and interaction code are preserved.
+Version 1.0.0 added credits links inside Experience's existing about dialog and
+in Analysis's footer. Version 1.0.1 optimizes Experience's rendering and loading;
+see [performance notes](PERFORMANCE.md). Audio, spectrograms, coordinates,
+rankings, and the interaction design are preserved.
 
 Original application code uses MIT. Dataset-derived assets retain CatMeows
 v1.0.2's CC BY-NC 4.0 terms, and photographs retain their individual licenses.

@@ -6,21 +6,29 @@
   const colors=Object.fromEntries([['B','--brush'],['F','--food'],['I','--isolation']].map(([context,token])=>[context,theme.getPropertyValue(token).trim()]));
   const indices=new Map(data.points.map((p,i)=>[p.id,i])),compact=matchMedia('(max-width:700px)');
   const profile=cat=>data.catProfiles?.[cat]?.description||'',catLabel=cat=>[cat,profile(cat)].filter(Boolean).join(' · ');
-  let selected=null,request=0,rendering=false,playTicket=0,frame=0;
+  let selected=null,request=0,rendering=false,playTicket=0,frame=0,drawCompact=null;
+  const xy=data.points.map(p=>p.coordinates),xs=xy.map(p=>p[0]),ys=xy.map(p=>p[1]),pointColors=data.points.map(p=>colors[p.context]);
   const incoming=new URLSearchParams(location.search).get('clip');
   function linkToAnalysis(){const id=selected===null?null:data.points[selected].id,href='analysis.html'+(id?'?clip='+encodeURIComponent(id):'');['analysis-link','about-analysis'].forEach(key=>get(key).href=href);try{const url=new URL(location.href);if(url.searchParams.has('clip')){id?url.searchParams.set('clip',id):url.searchParams.delete('clip');history.replaceState(null,'',url);}}catch(_){}}
   async function draw(){request++;if(rendering)return;rendering=true;try{let completed;do{
-    completed=request;const current=selected,xy=data.points.map(p=>p.coordinates);
-    // Redrawing a selection must retain the current zoom and pan, without changing saved coordinates.
+    completed=request;const current=selected;
+    // Pass only the ring change to Plotly; retain fixed data arrays and the current viewport.
+    if(plot.data&&drawCompact===compact.matches){
+      await Plotly.restyle(plot,{x:[current===null?[]:[xs[current]]],y:[current===null?[]:[ys[current]]],customdata:[current===null?[]:[current]],
+        'marker.color':current===null?'#fff':pointColors[current]},[2]);
+    }else{
+    // Initial rendering and layout changes retain the view without changing saved coordinates.
     const ranges={x:[...(plot._fullLayout?.xaxis.range||data.bounds.x)],y:[...(plot._fullLayout?.yaxis.range||data.bounds.y)]};
-    const traces=[{type:'scatter',mode:'markers',x:xy.map(p=>p[0]),y:xy.map(p=>p[1]),hoverinfo:'skip',showlegend:false,marker:{size:compact.matches?8:12,opacity:.055,color:data.points.map(p=>colors[p.context]),line:{width:0}}},
-      {type:'scatter',mode:'markers',x:xy.map(p=>p[0]),y:xy.map(p=>p[1]),ids:data.points.map(p=>p.id),customdata:data.points.map((_,i)=>i),hoverinfo:'none',showlegend:false,
-       marker:{size:compact.matches?4.5:5.5,opacity:.9,color:data.points.map(p=>colors[p.context]),symbol:'circle',line:{width:.5,color:'rgba(255,255,255,.16)'}}},
+    const traces=[{type:'scatter',mode:'markers',x:xs,y:ys,hoverinfo:'skip',showlegend:false,marker:{size:compact.matches?8:12,opacity:.055,color:pointColors,line:{width:0}}},
+      {type:'scatter',mode:'markers',x:xs,y:ys,ids:data.points.map(p=>p.id),customdata:data.points.map((_,i)=>i),hoverinfo:'none',showlegend:false,
+       marker:{size:compact.matches?4.5:5.5,opacity:.9,color:pointColors,symbol:'circle',line:{width:.5,color:'rgba(255,255,255,.16)'}}},
       {type:'scatter',mode:'markers',x:current===null?[]:[xy[current][0]],y:current===null?[]:[xy[current][1]],customdata:current===null?[]:[current],hoverinfo:'skip',showlegend:false,marker:{size:compact.matches?17:19,symbol:'circle-open',opacity:.9,color:current===null?'#fff':colors[data.points[current].context],line:{width:1}}}];
     const axis={visible:false,showgrid:false,zeroline:false,autorange:false,fixedrange:false,constrain:'domain'};
     await Plotly.react(plot,traces,{autosize:true,height:plot.clientHeight,margin:{l:30,r:30,t:30,b:65},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',showlegend:false,dragmode:'pan',hovermode:'closest',hoverdistance:14,
       xaxis:{...axis,range:ranges.x},yaxis:{...axis,range:ranges.y,scaleanchor:'x',scaleratio:1},uirevision:'experience-fixed-map'},
-      {responsive:true,displayModeBar:false,displaylogo:false,scrollZoom:true,doubleClick:false});
+      {responsive:false,displayModeBar:false,displaylogo:false,scrollZoom:true,doubleClick:false});
+    drawCompact=compact.matches;
+    }
     plot.dataset.ready='true';plot.dataset.selectedId=current===null?'':data.points[current].id;
     document.querySelectorAll('.experience-map-controls button').forEach(button=>button.disabled=false);
   }while(completed!==request);}catch(error){get('experience-error').hidden=false;get('experience-error').textContent='地図を表示できませんでした：'+error.message;}finally{rendering=false;}}
@@ -110,7 +118,13 @@
   get('picker-list').addEventListener('click',event=>{const button=event.target.closest('button[data-index]');if(!button)return;get('picker-dialog').close();choose(Number(button.dataset.index),true);});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.querySelector('dialog[open]')&&selected!==null){closeVoice();get('open-picker').focus();}});
   window.addEventListener('pagehide',()=>{playTicket++;audio.pause();cancelAnimationFrame(frame);});
-  new ResizeObserver(()=>{if(plot.data)Plotly.Plots.resize(plot);}).observe(plot);
+  let resizeFrame=0,lastWidth=0,lastHeight=0;
+  new ResizeObserver(([entry])=>{
+    const {width,height}=entry.contentRect;
+    if(width===lastWidth&&height===lastHeight)return;
+    lastWidth=width;lastHeight=height;cancelAnimationFrame(resizeFrame);
+    resizeFrame=requestAnimationFrame(()=>{if(plot.data)Plotly.Plots.resize(plot);});
+  }).observe(plot);
   compact.addEventListener('change',()=>{if(plot.data)draw();});
   if(!indices.has(incoming))linkToAnalysis();
   draw().then(()=>{plot.on('plotly_click',event=>{const point=event.points.find(p=>p.curveNumber!==0&&Number.isInteger(p.customdata));if(point)choose(point.customdata,true);});if(indices.has(incoming))choose(indices.get(incoming),false);});

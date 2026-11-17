@@ -22,6 +22,9 @@ time–frequency patterns in two connected views. The application interface is i
 Both views use the same saved coordinates and preserve the selected recording
 when moving between pages. Filtering changes visibility without fitting a new map.
 
+Experience uses a smaller plotting bundle and omits Analysis-only comparison
+rankings from its initial data. See [performance notes](docs/PERFORMANCE.md).
+
 ![MeowAtlas Analysis: recording selection and spectrogram comparison](docs/images/analysis.png)
 
 ## Run locally

@@ -15,7 +15,7 @@ The version-specific Zenodo API identifies `cc-by-nc-4.0`; the record also speci
 
 **Changes:** each recording is trimmed by 0.4 seconds at both ends, receives a 0.05-second linear fade at each end, and is saved as an 8 kHz mono PCM16 WAV. Log-Mel spectrograms, feature distances, and UMAP coordinates are derived from the recordings. These derived assets are kept with the dataset attribution and non-commercial terms. No affiliation with or endorsement by the dataset creators is implied.
 
-The dataset and derived assets include `site/audio/`, `site/spectra/`, the recording-derived contents of `site/data.js`, and the data in `analysis/`. Original code in `analysis/reproduce.py` is separate from those assets.
+The dataset and derived assets include `site/audio/`, `site/spectra/`, the recording-derived contents of `site/data.js` and `site/experience-data.js`, and the data in `analysis/`. Original code in `analysis/reproduce.py` is separate from those assets.
 
 The map and spectrogram screenshots in `docs/images/` also contain derived dataset material and retain the same attribution and non-commercial terms.
 
@@ -51,7 +51,10 @@ The table below and [site/cat-images/credits.json](site/cat-images/credits.json)
 
 ## Plotly.js
 
-The bundled `site/vendor/plotly.min.js` identifies itself as Plotly.js 4.1.1.
+The bundled `site/vendor/plotly.min.js` and `site/vendor/plotly-basic.min.js`
+identify themselves as Plotly.js 4.1.1. Experience uses the smaller basic bundle;
+Analysis retains the full bundle. The basic bundle was obtained from the
+[official versioned distribution](https://cdn.plot.ly/plotly-basic-4.1.1.min.js).
 The original bundle header is preserved, and the upstream [MIT license text](site/vendor/LICENSE-Plotly.txt) is included.
 [Upstream source and license](https://github.com/plotly/plotly.js/tree/v4.1.1).
 
