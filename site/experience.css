@@ -76,3 +76,17 @@
 @media(max-width:700px){.experience-map-controls{top:114px;right:22px}.experience-map-controls button{min-width:44px;height:44px}#experience-reset-view{padding:0 14px}}
 @media(max-width:360px){.experience-map-controls{right:17px}}
 @media(max-height:560px) and (min-width:701px){.experience-map-controls{top:64px}}
+
+/* Reserve touch gestures for the map; page zoom remains available outside it. */
+#experience-map{touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* Keep playback controls readable while giving the map more room. */
+#voice-card{width:350px;padding:16px 20px 12px}
+#voice-card .cat-overview{grid-template-columns:80px minmax(0,1fr);gap:12px}
+#voice-card .voice-heading h2{font-size:24px;line-height:1.3}
+#voice-card .voice-heading .close-button{width:44px;height:44px;top:-12px;right:-13px}
+#voice-card .voice-profile{line-height:1.5}
+#voice-card .voice-context{margin-top:5px}
+#voice-card .voice-player{margin-top:8px;gap:12px}
+@media(max-width:700px){#voice-card{width:min(340px,calc(100% - 34px));padding:14px 18px 12px}#voice-card .cat-overview{grid-template-columns:76px minmax(0,1fr)}#voice-card .voice-heading h2{font-size:23px}}
+@media(max-width:360px){#voice-card{width:calc(100% - 24px);padding:14px 16px 12px}#voice-card .cat-overview{grid-template-columns:64px minmax(0,1fr);gap:10px}}

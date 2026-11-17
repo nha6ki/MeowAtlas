@@ -7,12 +7,12 @@
   <meta name="description" content="点を選んで、鳴き声を聴いてみましょう。MeowAtlas Experience。">
   <title>Experience — MeowAtlas</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%236355bf'/%3E%3Cpath d='M10 28V10l10 7 10-7v18Z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='24' r='1.5' fill='white'/%3E%3Ccircle cx='24' cy='24' r='1.5' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="experience.css">
+  <link rel="stylesheet" href="experience.css?v=1.0.2">
   <link rel="stylesheet" href="breed-photos.css">
   <script src="vendor/plotly-basic.min.js" defer></script>
   <script src="experience-data.js" defer></script>
   <script src="breed-photos.js" defer></script>
-  <script src="experience.js" defer></script>
+  <script src="experience.js?v=1.0.2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#open-picker">音声一覧から選ぶ</a>
@@ -22,7 +22,7 @@
   </header>
   <main id="experience-main">
     <h1 class="sr-only">点を選んで、鳴き声を聴いてみましょう</h1>
-    <div id="experience-map" role="img" aria-label="440音声の2次元地図。録音条件で色分けしています。ボタンやホイールで拡大・縮小、ドラッグで移動できます。点をクリック・タップすると鳴き声を再生します。音声一覧からも選べます。" aria-describedby="context-legend"></div>
+    <div id="experience-map" role="img" aria-label="440音声の2次元地図。録音条件で色分けしています。2本指・ボタン・ホイールで拡大・縮小、1本指やドラッグで移動できます。点をクリック・タップすると鳴き声を再生します。音声一覧からも選べます。" aria-describedby="context-legend"></div>
     <aside id="context-legend" class="map-legend" aria-label="色の凡例">
       <ul><li><span class="legend-dot brush" aria-hidden="true"></span>ブラッシング</li><li><span class="legend-dot food" aria-hidden="true"></span>食事待ち</li><li><span class="legend-dot isolation" aria-hidden="true"></span>隔離</li></ul>
     </aside>
