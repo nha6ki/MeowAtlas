@@ -6,29 +6,46 @@
   const colors=Object.fromEntries([['B','--brush'],['F','--food'],['I','--isolation']].map(([context,token])=>[context,theme.getPropertyValue(token).trim()]));
   const indices=new Map(data.points.map((p,i)=>[p.id,i])),compact=matchMedia('(max-width:700px)');
   const profile=cat=>data.catProfiles?.[cat]?.description||'',catLabel=cat=>[cat,profile(cat)].filter(Boolean).join(' · ');
-  let selected=null,request=0,rendering=false,playTicket=0,frame=0,drawCompact=null;
+  let selected=null,request=0,rendering=false,playTicket=0,frame=0,drawCompact=null,drawWidth=0,drawHeight=0;
+  const mapMargin={l:18,r:18,t:4,b:4};
   const xy=data.points.map(p=>p.coordinates),xs=xy.map(p=>p[0]),ys=xy.map(p=>p[1]),pointColors=data.points.map(p=>colors[p.context]);
   const incoming=new URLSearchParams(location.search).get('clip');
   let cancelTouch=()=>{},suppressMapClickUntil=0;
+  function viewportRanges(width,height,reset=false){
+    const w=Math.max(1,width-mapMargin.l-mapMargin.r),h=Math.max(1,height-mapMargin.t-mapMargin.b);
+    const xSpan=data.bounds.x[1]-data.bounds.x[0],ySpan=data.bounds.y[1]-data.bounds.y[0];
+    let centerX=(data.bounds.x[0]+data.bounds.x[1])/2,centerY=(data.bounds.y[0]+data.bounds.y[1])/2,zoom=1;
+    if(plot._fullLayout&&!reset){
+      const {xaxis:x,yaxis:y}=plot._fullLayout;
+      centerX=(x.range[0]+x.range[1])/2;centerY=(y.range[0]+y.range[1])/2;
+      zoom=(x._length/(x.range[1]-x.range[0]))/Math.min(x._length/xSpan,y._length/ySpan);
+    }
+    // Preserve zoom relative to the fitted map across orientation changes.
+    // Reusing already-expanded ranges would shrink the map on every resize.
+    const scale=Math.min(w/xSpan,h/ySpan)*zoom;
+    return {x:[centerX-w/scale/2,centerX+w/scale/2],y:[centerY-h/scale/2,centerY+h/scale/2]};
+  }
   function linkToAnalysis(){const id=selected===null?null:data.points[selected].id,href='analysis.html'+(id?'?clip='+encodeURIComponent(id):'');['analysis-link','about-analysis'].forEach(key=>get(key).href=href);try{const url=new URL(location.href);if(url.searchParams.has('clip')){id?url.searchParams.set('clip',id):url.searchParams.delete('clip');history.replaceState(null,'',url);}}catch(_){}}
   async function draw(){request++;if(rendering)return;rendering=true;try{let completed;do{
-    completed=request;const current=selected;
+    completed=request;const current=selected,width=plot.clientWidth,height=plot.clientHeight;
     // Pass only the ring change to Plotly; retain fixed data arrays and the current viewport.
-    if(plot.data&&drawCompact===compact.matches){
+    if(plot.data&&drawCompact===compact.matches&&drawWidth===width&&drawHeight===height){
       await Plotly.restyle(plot,{x:[current===null?[]:[xs[current]]],y:[current===null?[]:[ys[current]]],customdata:[current===null?[]:[current]],
         'marker.color':current===null?'#fff':pointColors[current]},[2]);
     }else{
     // Initial rendering and layout changes retain the view without changing saved coordinates.
-    const ranges={x:[...(plot._fullLayout?.xaxis.range||data.bounds.x)],y:[...(plot._fullLayout?.yaxis.range||data.bounds.y)]};
+    const ranges=viewportRanges(width,height);
     const traces=[{type:'scatter',mode:'markers',x:xs,y:ys,hoverinfo:'skip',showlegend:false,marker:{size:compact.matches?8:12,opacity:.055,color:pointColors,line:{width:0}}},
       {type:'scatter',mode:'markers',x:xs,y:ys,ids:data.points.map(p=>p.id),customdata:data.points.map((_,i)=>i),hoverinfo:'none',showlegend:false,
        marker:{size:compact.matches?4.5:5.5,opacity:.9,color:pointColors,symbol:'circle',line:{width:.5,color:'rgba(255,255,255,.16)'}}},
       {type:'scatter',mode:'markers',x:current===null?[]:[xy[current][0]],y:current===null?[]:[xy[current][1]],customdata:current===null?[]:[current],hoverinfo:'skip',showlegend:false,marker:{size:compact.matches?17:19,symbol:'circle-open',opacity:.9,color:current===null?'#fff':colors[data.points[current].context],line:{width:1}}}];
-    const axis={visible:false,showgrid:false,zeroline:false,autorange:false,fixedrange:false,constrain:'domain'};
-    await Plotly.react(plot,traces,{autosize:true,height:plot.clientHeight,margin:{l:30,r:30,t:30,b:65},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',showlegend:false,dragmode:'pan',hovermode:'closest',hoverdistance:14,
+    // Keep the entire viewport drawable. Preserve equal axis scales by extending
+    // the visible coordinate range, rather than shrinking the clipping rectangle.
+    const axis={visible:false,showgrid:false,zeroline:false,autorange:false,fixedrange:false,constrain:'range',domain:[0,1]};
+    await Plotly.react(plot,traces,{autosize:true,width,height,margin:mapMargin,paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',showlegend:false,dragmode:'pan',hovermode:'closest',hoverdistance:14,
       xaxis:{...axis,range:ranges.x},yaxis:{...axis,range:ranges.y,scaleanchor:'x',scaleratio:1},uirevision:'experience-fixed-map'},
       {responsive:false,displayModeBar:false,displaylogo:false,scrollZoom:true,doubleClick:false});
-    drawCompact=compact.matches;
+    drawCompact=compact.matches;drawWidth=width;drawHeight=height;
     }
     plot.dataset.ready='true';plot.dataset.selectedId=current===null?'':data.points[current].id;
     document.querySelectorAll('.experience-map-controls button').forEach(button=>button.disabled=false);
@@ -42,7 +59,7 @@
   }
   get('experience-zoom-in').addEventListener('click',()=>zoomMap(.75));
   get('experience-zoom-out').addEventListener('click',()=>zoomMap(4/3));
-  get('experience-reset-view').addEventListener('click',()=>{cancelTouch();Plotly.relayout(plot,{'xaxis.range':[...data.bounds.x],'yaxis.range':[...data.bounds.y]});});
+  get('experience-reset-view').addEventListener('click',()=>{cancelTouch();const ranges=viewportRanges(plot.clientWidth,plot.clientHeight,true);Plotly.relayout(plot,{'xaxis.range':ranges.x,'yaxis.range':ranges.y});});
   function installTouchGestures(){
     let gesture=null,paintFrame=0,committing=false;
     const identity=()=>({scale:1,x:0,y:0});
@@ -214,9 +231,8 @@
     if(width===lastWidth&&height===lastHeight)return;
     cancelTouch();
     lastWidth=width;lastHeight=height;cancelAnimationFrame(resizeFrame);
-    resizeFrame=requestAnimationFrame(()=>{if(plot.data)Plotly.Plots.resize(plot);});
+    resizeFrame=requestAnimationFrame(()=>{if(plot.data)draw();});
   }).observe(plot);
-  compact.addEventListener('change',()=>{cancelTouch();if(plot.data)draw();});
   if(!indices.has(incoming))linkToAnalysis();
   draw().then(()=>{installTouchGestures();plot.on('plotly_click',event=>{if(performance.now()<suppressMapClickUntil)return;const point=event.points.find(p=>p.curveNumber!==0&&Number.isInteger(p.customdata));if(point)choose(point.customdata,true);});if(indices.has(incoming))choose(indices.get(incoming),false);});
 })();
