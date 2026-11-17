@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="点を選んで、鳴き声を聴いてみましょう。MeowAtlas Experience。">
+  <title>Experience — MeowAtlas</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%236355bf'/%3E%3Cpath d='M10 28V10l10 7 10-7v18Z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='24' r='1.5' fill='white'/%3E%3Ccircle cx='24' cy='24' r='1.5' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="experience.css">
+  <link rel="stylesheet" href="breed-photos.css">
+  <script src="vendor/plotly.min.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="breed-photos.js" defer></script>
+  <script src="experience.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#open-picker">音声一覧から選ぶ</a>
+  <header class="experience-header">
+    <a class="experience-brand" href="index.html" aria-label="MeowAtlas Experienceの最初の画面へ"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M7 27V8l11 8L29 8v19Z"/><circle cx="13.5" cy="22" r="1.25"/><circle cx="22.5" cy="22" r="1.25"/></svg><span>MeowAtlas</span></a>
+    <nav class="experience-nav" aria-label="表示モード"><a href="index.html" aria-current="page">Experience</a><a href="analysis.html" id="analysis-link">Analysis</a></nav>
+  </header>
+  <main id="experience-main">
+    <h1 class="sr-only">点を選んで、鳴き声を聴いてみましょう</h1>
+    <div id="experience-map" role="img" aria-label="440音声の2次元地図。録音条件で色分けしています。ボタンやホイールで拡大・縮小、ドラッグで移動できます。点をクリック・タップすると鳴き声を再生します。音声一覧からも選べます。" aria-describedby="context-legend"></div>
+    <aside id="context-legend" class="map-legend" aria-label="色の凡例">
+      <ul><li><span class="legend-dot brush" aria-hidden="true"></span>ブラッシング</li><li><span class="legend-dot food" aria-hidden="true"></span>食事待ち</li><li><span class="legend-dot isolation" aria-hidden="true"></span>隔離</li></ul>
+    </aside>
+    <div class="experience-map-controls" role="group" aria-label="地図の表示操作">
+      <button type="button" id="experience-zoom-in" aria-label="地図を拡大" title="拡大" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg></button>
+      <button type="button" id="experience-zoom-out" aria-label="地図を縮小" title="縮小" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg></button>
+      <button type="button" id="experience-reset-view" aria-label="地図を全体表示に戻す" title="全体表示に戻す" disabled>全体</button>
+    </div>
+    <div class="invitation" id="invitation"><p>点を選んで、鳴き声を聴いてみましょう</p><span>21匹の猫・440の鳴き声</span></div>
+    <section id="voice-card" class="voice-card" aria-labelledby="voice-title" hidden>
+      <div class="cat-overview"><figure id="voice-breed-photo" class="breed-photo" hidden></figure><div class="cat-overview-copy"><div class="voice-heading"><div><p class="voice-kicker">A VOICE FROM</p><h2 id="voice-title"></h2></div><button type="button" class="close-button" id="close-voice" aria-label="音声を閉じて地図だけの表示に戻す">×</button></div><p id="voice-profile" class="voice-profile"></p><span class="voice-context" id="voice-context"></span></div></div>
+      <audio id="experience-audio" preload="metadata"></audio>
+      <div class="voice-player"><button type="button" id="play-voice" class="play-button" aria-label="音声を再生"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="M8 5v14l11-7Z"/></svg></button><div class="voice-track"><label for="voice-seek" class="sr-only">再生位置（秒）</label><input id="voice-seek" type="range" min="0" max="1" value="0" step="0.01"><div class="voice-time"><span id="voice-status" aria-live="polite">再生ボタンで聴く</span><span><span id="voice-elapsed">0.00</span> / <span id="voice-total"></span> 秒</span></div></div></div>
+      <p id="voice-error" class="error" role="alert" hidden></p>
+    </section>
+    <p id="experience-error" class="error main-error" role="alert" hidden></p>
+  </main>
+  <footer class="experience-footer"><button type="button" id="open-about" class="text-button">この地図について</button><button type="button" id="open-picker" class="text-button picker-trigger" aria-haspopup="dialog"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4h8M6 8h8M6 12h8"/><circle cx="2" cy="4" r=".7"/><circle cx="2" cy="8" r=".7"/><circle cx="2" cy="12" r=".7"/></svg>音声一覧</button></footer>
+  <dialog id="about-dialog" class="experience-dialog" aria-labelledby="about-title"><div class="dialog-heading"><h2 id="about-title">この地図について</h2><button type="button" class="close-button" data-close="about-dialog" aria-label="地図の説明を閉じる">×</button></div><p>21匹の猫から集められた440の鳴き声。音の時間・周波数パターンをもとに並べています。</p><div class="about-legend"><span><i class="brush">●</i> ブラッシング</span><span><i class="food">●</i> 食事待ち</span><span><i class="isolation">●</i> 隔離</span></div><p>色は録音された状況を表します。猫の感情や意図を表すものではありません。</p><p>近い点が、必ず似た声とは限りません。音の長さや背景音も位置に影響します。聞こえる違いを確かめてみてください。</p><section class="photo-about" aria-labelledby="photo-about-title"><h3 id="photo-about-title">猫の写真について</h3><p>写真は、猫を見分けやすくするために猫IDごとに割り当てた同品種のイメージです。録音された猫の実際の姿ではありません。</p><details><summary>写真の出典・ライセンス（21件）</summary><div id="photo-credits-list"></div></details></section><p class="about-source">CatMeows v1.0.2 · Ludovico et al. (2021)<br>Analysisと同じ固定座標。人工的な配置調整なし。<br><a href="credits.html">データ・写真・ライブラリの出典と利用条件</a></p><a href="analysis.html" id="about-analysis" class="dialog-link">Analysisで音のかたちを見る ↗</a></dialog>
+  <dialog id="picker-dialog" class="experience-dialog" aria-labelledby="picker-title" aria-describedby="picker-hint">
+    <div class="picker-header"><div class="dialog-heading"><h2 id="picker-title">音声一覧</h2><button type="button" class="close-button" data-close="picker-dialog" aria-label="音声一覧を閉じる">×</button></div><p id="picker-hint">音声を選ぶと再生し、地図に戻ります。</p></div>
+    <div class="picker-filter-panel">
+      <div class="picker-fields"><label class="picker-field" for="picker-cat">猫<select id="picker-cat"><option value="all">すべての猫</option></select></label><label class="picker-field" for="picker-search">検索<input id="picker-search" type="search" placeholder="猫ID・品種・録音ID" autocomplete="off" spellcheck="false"></label></div>
+      <div id="picker-contexts" class="picker-contexts" role="group" aria-label="録音条件で絞り込む"><button type="button" data-context="all" aria-pressed="true">すべて</button><button type="button" data-context="B" aria-pressed="false"><span class="legend-dot brush" aria-hidden="true"></span>ブラッシング</button><button type="button" data-context="F" aria-pressed="false"><span class="legend-dot food" aria-hidden="true"></span>食事待ち</button><button type="button" data-context="I" aria-pressed="false"><span class="legend-dot isolation" aria-hidden="true"></span>隔離</button></div>
+    </div>
+    <div class="picker-summary"><span id="picker-count" role="status" aria-live="polite"></span><button type="button" id="picker-reset" hidden>絞り込みを解除</button></div>
+    <div class="picker-results" id="picker-results"><div id="picker-list"></div><p id="picker-empty" hidden>該当する音声がありません。<br>検索語や絞り込みを変更してください。</p></div>
+  </dialog>
+  <div id="experience-announcement" class="sr-only" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="440の猫の鳴き声を、地図と音で探索する。MeowAtlas。">
+  <title>Analysis — MeowAtlas</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%236355bf'/%3E%3Cpath d='M10 28V10l10 7 10-7v18Z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='24' r='1.5' fill='white'/%3E%3Ccircle cx='24' cy='24' r='1.5' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="breed-photos.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="vendor/plotly.min.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="breed-photos.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#clip-select">音声の選択へ</a>
+  <div class="app-shell">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="MeowAtlas ホーム">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12"/><path d="M10 28V10l10 7 10-7v18Z"/><circle cx="16" cy="24" r="1.5"/><circle cx="24" cy="24" r="1.5"/></svg>
+        <span>MeowAtlas<span class="brand-sub">猫の鳴き声を聴く地図</span></span>
+      </a>
+      <nav class="page-nav" aria-label="表示モード"><a href="index.html" id="experience-link">Experience</a><a href="analysis.html" aria-current="page">Analysis</a></nav>
+    </header>
+    <main>
+      <div class="intro"><div><p class="eyebrow">ANALYSIS</p><h1>音声の比較・分析</h1></div><p class="intro-note">21匹の猫・440の鳴き声</p></div>
+      <div class="workspace">
+        <section class="map-panel" aria-labelledby="map-title">
+          <div class="map-heading"><div><h2 id="map-title">音声を選択</h2><p id="visible-count" class="muted" aria-live="polite">地図を準備しています</p></div><div class="zoom-controls"><button type="button" class="icon-button" id="zoom-in" aria-label="地図を拡大">＋</button><button type="button" class="icon-button" id="zoom-out" aria-label="地図を縮小">−</button><button type="button" class="button button-quiet" id="reset-view">全体</button></div></div>
+          <div class="map-controls">
+            <div class="filter-heading"><h3>大分類で絞り込む</h3><button type="button" class="filter-reset" id="reset-filters">絞り込みを解除</button></div>
+            <div class="category-filters">
+              <label class="field breed-field" for="breed-filter">品種<select id="breed-filter"><option value="all">すべての品種</option><option value="MC">メインクーン</option><option value="EU">ヨーロピアンショートヘア</option></select></label>
+              <label class="field" for="sex-filter">性別<select id="sex-filter"><option value="all">すべて</option><option value="F">メス</option><option value="M">オス</option></select></label>
+              <label class="field" for="neuter-filter">避妊・去勢<select id="neuter-filter"><option value="all">すべて</option><option value="N">済み</option><option value="I">未実施</option></select></label>
+            </div>
+            <label class="field individual-filter" for="cat-filter">猫（個体）<select id="cat-filter"><option value="all">すべての猫</option></select></label>
+          </div>
+          <fieldset class="context-filter"><legend class="sr-only">録音条件で絞り込む</legend><div class="context-options">
+            <label class="context-option context-b"><input type="checkbox" value="B" checked><span class="context-symbol" aria-hidden="true">●</span><span>ブラッシング</span><span class="context-count" id="count-B">127</span></label>
+            <label class="context-option context-f"><input type="checkbox" value="F" checked><span class="context-symbol" aria-hidden="true">●</span><span>食事待ち</span><span class="context-count" id="count-F">92</span></label>
+            <label class="context-option context-i"><input type="checkbox" value="I" checked><span class="context-symbol" aria-hidden="true">●</span><span>隔離</span><span class="context-count" id="count-I">221</span></label>
+          </div></fieldset>
+          <div class="map-selection-target" role="group" aria-labelledby="selection-target-label" aria-describedby="selection-target-instruction">
+            <p id="selection-target-label">音声の選択先</p>
+            <div class="selection-target-buttons">
+              <button type="button" data-select-target="A" aria-label="Aの音声を選ぶ" aria-pressed="true"><span class="target-letter" aria-hidden="true">A</span><span class="target-copy"><strong>Aの音声</strong><span class="target-state">✓ 選択中</span></span></button>
+              <button type="button" data-select-target="B" aria-label="Bの音声を選ぶ" aria-pressed="false" disabled><span class="target-letter" aria-hidden="true">B</span><span class="target-copy"><strong>Bの音声</strong><span class="target-state">まずAを選択</span></span></button>
+            </div>
+            <p id="selection-target-instruction" aria-live="polite">地図の点を選ぶと、Aに設定されます。</p>
+          </div>
+          <div class="map-stage"><div id="atlas-map" role="img" aria-label="440音声の2次元地図。横軸UMAP 1、縦軸UMAP 2。点を選択して音声Aを変更します。"></div><div id="map-empty" class="map-empty" hidden><p>該当する音声がありません</p><button type="button" class="button" id="clear-filters">絞り込みを解除</button></div></div>
+          <p class="map-hint" id="map-selection-hint" aria-live="polite">まずAの点を選択してください。</p>
+          <div class="clip-browser"><div class="section-heading"><label for="clip-search" id="clip-browser-label">音声一覧からAを選ぶ</label><span id="clip-search-count"></span></div><input type="search" id="clip-search" placeholder="猫ID・品種・録音IDで検索" aria-label="表示中の音声一覧を検索" autocomplete="off" spellcheck="false"><label class="sr-only" for="clip-select" id="clip-select-label">音声Aを選ぶ</label><select id="clip-select"><option value="">点または音声を選択</option></select></div>
+        </section>
+        <div class="inspection-column">
+          <div class="audio-pair"><section class="detail-panel analysis-panel" aria-labelledby="detail-heading">
+  <div class="detail-topline"><h2 id="detail-heading"><span class="panel-letter">A</span>基準の音声</h2><span class="live-dot" id="playing-indicator" hidden>再生中</span><button type="button" id="back-to-map" class="button button-quiet back-to-map">地図へ</button></div>
+  <div id="detail-empty" class="detail-empty"><p>地図の点、または音声一覧から<br>分析する音声を選択してください。</p><button type="button" class="button button-primary" id="choose-first">最初の音声を選択</button></div>
+  <div id="detail-content" hidden>
+    <div class="cat-overview"><figure id="selected-breed-photo" class="breed-photo" hidden></figure><div class="cat-overview-copy"><h3 id="selected-cat"></h3><p id="selected-profile" class="cat-profile"></p><span id="selected-context" class="context-badge"></span></div></div>
+    <p class="photo-note">写真は同品種の別個体です。</p>
+    <div class="player-block"><audio id="audio-player" controls preload="metadata" aria-label="音声Aを再生"></audio><div class="player-meta"><p id="audio-status" class="player-note" aria-live="polite">再生ボタンで再生</p><span id="selected-duration"></span></div></div>
+    <section class="spectrum-section" aria-labelledby="spectrogram-title"><div class="section-heading"><h3 id="spectrogram-title">メルスペクトログラム</h3></div><canvas id="spectrogram" role="img" aria-label="音声Aのスペクトログラム。横軸は秒、縦軸は周波数。"></canvas><div class="spectrum-key"><span>−80 dB</span><span class="spectrum-gradient" aria-hidden="true"></span><span>0 dB</span></div></section>
+    <details class="recording-details"><summary>録音情報・写真の出典</summary><dl><div><dt>録音ID</dt><dd id="selected-id" class="clip-id"></dd></div><div><dt>収録回</dt><dd id="selected-session"></dd></div><div><dt>元の長さ</dt><dd id="selected-original-duration"></dd></div></dl><div id="selected-breed-credit" class="breed-credit" hidden></div></details>
+  </div><p id="detail-error" class="error-message" role="alert" hidden></p>
+</section><section class="comparison-panel analysis-panel" aria-labelledby="comparison-heading">
+  <div class="detail-topline"><h2 id="comparison-heading"><span class="panel-letter">B</span>比較する音声</h2><button type="button" id="to-comparison-candidates" class="button button-quiet back-to-map">候補へ</button></div>
+  <div id="comparison-empty" class="detail-empty"><p>Aを選ぶと、距離が近い音声を表示します。<br>地図の選択先をBに切り替えるか、下の候補から変更できます。</p></div>
+  <div id="comparison-content" hidden>
+    <div class="cat-overview"><figure id="comparison-breed-photo" class="breed-photo" hidden></figure><div class="cat-overview-copy"><h3 id="comparison-cat"></h3><p id="comparison-profile" class="cat-profile"></p><span id="comparison-context" class="context-badge"></span></div></div>
+    <p class="photo-note">写真は同品種の別個体です。</p>
+    <div class="player-block"><audio id="comparison-audio" controls preload="metadata" aria-label="音声Bを再生"></audio><div class="player-meta"><p id="comparison-status" class="player-note" aria-live="polite">再生ボタンで再生</p><span id="comparison-duration"></span></div></div>
+    <section class="spectrum-section" aria-labelledby="comparison-spectrogram-title"><div class="section-heading"><h3 id="comparison-spectrogram-title">メルスペクトログラム</h3></div><canvas id="comparison-spectrogram" role="img" aria-label="音声Bのスペクトログラム。横軸は秒、縦軸は周波数。"></canvas><div class="spectrum-key"><span>−80 dB</span><span class="spectrum-gradient" aria-hidden="true"></span><span>0 dB</span></div></section>
+    <details class="recording-details"><summary>録音情報・写真の出典</summary><dl><div><dt>録音ID</dt><dd id="comparison-id" class="clip-id"></dd></div><div><dt>収録回</dt><dd id="comparison-session"></dd></div><div><dt>元の長さ</dt><dd id="comparison-original-duration"></dd></div></dl><div id="comparison-breed-credit" class="breed-credit" hidden></div></details>
+  </div><p id="comparison-error" class="error-message" role="alert" hidden></p>
+</section></div>
+          <p class="comparison-note">両図とも横軸0〜3.5秒、縦軸0〜4 kHz。色は各音声の最大値を0 dBとした相対値です。録音間の絶対音量は比較できません。</p>
+          <section class="related-section" aria-labelledby="related-title">
+            <div class="related-heading"><h2 id="related-title">Bの比較候補</h2><div class="related-controls"><label class="sr-only" for="related-mode">距離を計算する空間</label><select id="related-mode"><option value="feature">音声特徴の距離</option><option value="map">地図上の距離</option></select><div class="range-toggle" role="group" aria-label="候補の距離"><button type="button" data-range="near" aria-pressed="true">近い</button><button type="button" data-range="far" aria-pressed="false">遠い</button></div></div></div>
+            <p id="related-caption" class="muted small" aria-live="polite">Aを選択すると、比較候補を表示します。</p><div id="related-list" class="related-list"></div>
+          </section>
+          <section class="methods-section related-section" aria-labelledby="methods-title">
+            <div class="related-heading"><h2 id="methods-title">データと解析条件</h2></div>
+            <div class="methods-content">
+              <section aria-labelledby="methods-dataset-title">
+                <h3 id="methods-dataset-title">使用データ：CatMeows v1.0.2</h3>
+                <p>CatMeowsは、ミラノ大学の研究チームが公開した猫の鳴き声のデータセットです。MeowAtlasではv1.0.2の全440件を使用しています。対象は成猫21匹で、メインクーン10匹とヨーロピアンショートヘア11匹です。</p>
+                <h4>録音機材と装着方法</h4>
+                <p>小型Bluetoothヘッドセット「QCY Q26 Pro」のマイクを首輪に取り付け、喉の下で上向きに配置しています。猫と一緒にマイクが動くことで、口元との距離や向きの変化を抑える設計です。</p>
+                <p>Bluetooth接続したスマートフォンの「Easy Voice Recorder PRO」で録音しています。収録時のサンプリング周波数は8 kHzで、理論上の周波数の上限は4 kHzです。猫の声のうち、この帯域を超える成分は評価できません。</p>
+                <h4>録音状況と収録手順</h4>
+                <p>獣医師の立ち会いのもと、次の3つの状況で収録されています。</p>
+                <dl>
+                  <div><dt>ブラッシング</dt><dd>自宅で、飼い主が最大5分間ブラッシングします。</dd></div>
+                  <div><dt>食事待ち</dt><dd>慣れた環境で、飼い主が食事の準備を始めます。開始から5分以内に餌を与えます。</dd></div>
+                  <div><dt>隔離</dt><dd>慣れない部屋などに移動し、飼い主と30分間過ごした後、猫が最大5分間単独で過ごします。</dd></div>
+                </dl>
+                <h4>配布音声の切り出し</h4>
+                <p>原論文では、鳴き声を1回ずつ切り出し、前後にそれぞれ0.5秒の余白を残してWAV形式で保存したと説明されています。余白には背景音が含まれます。</p>
+                <p>音声ファイル名には、録音条件、猫ID、品種、性別・避妊／去勢の状態、収録回などの情報が記録されています。これらを、猫のプロフィール表示や音声の絞り込みに利用しています。</p>
+                <p class="dataset-reference">収録方法の出典：<a href="https://air.unimi.it/retrieve/handle/2434/811133/1692648/Ludovico2021_Chapter_CatMeowsAPublicly-AvailableDat.pdf#page=2" target="_blank" rel="noopener noreferrer">Ludovico et al.（2021）、第2〜3節（PDF）</a></p>
+              </section>
+              <section aria-labelledby="methods-map-title">
+                <h3 id="methods-map-title">地図の作成と見方</h3>
+                <p>音の時間・周波数パターンをメルスペクトログラムで表し、その特徴量を教師なしUMAPで2次元に配置しています。録音条件のラベルは、配置の計算に使用していません。</p>
+                <p>横軸のUMAP 1・縦軸のUMAP 2は、次元削減後の座標です。物理的な単位はなく、音の高さや大きさを直接表す軸ではありません。</p>
+                <p>点の色は録音時の状況を表します。猫の感情や意図を示すものではありません。</p>
+                <p>ExperienceとAnalysisは同じ固定座標を使用しています。配置後の座標調整は行わず、地図の絞り込みでは表示する音声だけを切り替えます。</p>
+              </section>
+              <section aria-labelledby="methods-comparison-title">
+                <h3 id="methods-comparison-title">比較候補の選び方</h3>
+                <p>「Bの比較候補」には、Aと比較する別の音声を最大3件表示します。「近い」ではAとの距離が小さい順に、「遠い」では大きい順に並べます。候補は、地図の絞り込み条件に合う音声から選びます。</p>
+                <dl class="distance-definitions">
+                  <div><dt>音声特徴の距離</dt><dd>UMAPに入力したメル特徴量どうしの距離です。</dd></div>
+                  <div><dt>地図上の距離</dt><dd>UMAPで得られた2次元座標どうしの距離です。</dd></div>
+                </dl>
+                <p>どちらもユークリッド距離で計算します。次元削減によって距離関係が変わるため、候補や順位が異なることがあります。</p>
+              </section>
+              <section aria-labelledby="methods-reading-title">
+                <h3 id="methods-reading-title">比較するときの留意点</h3>
+                <p>特徴量には時間方向のパターンを残しており、発声開始位置の再検出や時間の伸縮は行っていません。距離には、音色に加えて、処理後の音声の長さ・発声の開始位置・背景音も影響します。</p>
+                <p>メインクーン10匹は同じ飼い主・飼育環境、ヨーロピアンショートヘア11匹は異なる飼い主・飼育環境から収録されています。この地図だけでは、品種による違いと飼育・録音環境による違いを切り分けられません。</p>
+                <p>近い点どうしでも似た声とは限らず、点のまとまりが明確な分類を示すとも限りません。音声とスペクトログラムを合わせて比較してください。</p>
+              </section>
+              <section aria-labelledby="methods-audio-title">
+                <h3 id="methods-audio-title">MeowAtlasでの前処理</h3>
+                <p>原論文の第4.2節にある前処理例に従い、配布音声の冒頭と末尾をそれぞれ0.4秒除去し、両端に0.05秒ずつの線形フェードをかけています。鳴き声の前後に残された余白の背景音を減らすための処理です。フェードでは、冒頭の音量を徐々に上げ、末尾では下げます。</p>
+                <p>8 kHz・モノラルを維持し、処理後の音声を両ページでの再生と特徴量の計算に使用しています。メル特徴量とUMAPによる地図の作成は、MeowAtlasで採用した解析方法です。</p>
+                <p class="dataset-reference">前処理の出典：<a href="https://air.unimi.it/retrieve/handle/2434/811133/1692648/Ludovico2021_Chapter_CatMeowsAPublicly-AvailableDat.pdf#page=9" target="_blank" rel="noopener noreferrer">Ludovico et al.（2021）、第4.2節（PDF）</a></p>
+              </section>
+              <section class="method-parameters" aria-labelledby="method-parameters-title">
+                <h3 id="method-parameters-title">主な解析設定</h3>
+                <dl>
+                  <div><dt>メルスペクトログラム</dt><dd>40帯域、0〜4 kHz。窓長30 ms（240サンプル）、ホップ長3.75 ms（30サンプル）、Hann窓。各音声の最大パワーを0 dBとする対数尺度に変換し、下限を−80 dBに制限しています。</dd></div>
+                  <div><dt>特徴量の作成</dt><dd>音声ごとにスペクトログラム全体を平均0・標準偏差1に標準化し、時間方向の末尾を0で埋めて854フレームに揃えます。この0は標準化後の平均値を表します。40帯域 × 854フレームを1列に並べた、34,160次元のベクトルを使用しています。</dd></div>
+                  <div><dt>UMAP</dt><dd>2次元、近傍数15、min_dist 0.1、距離はユークリッド、乱数シード42、500エポック。</dd></div>
+                </dl>
+              </section>
+              <p class="methods-source">データ：<a href="https://zenodo.org/records/4008297" target="_blank" rel="noopener noreferrer">CatMeows v1.0.2（配布元）</a>。関連論文：Ludovico et al.（2021）。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="page-footer"><span>MeowAtlas · CatMeows v1.0.2 · <a href="credits.html">出典と利用条件</a></span></footer>
+      <div id="app-status" class="sr-only" role="status" aria-live="polite"></div><div id="app-error" class="error-message" role="alert" hidden></div>
+    </main>
+  </div>
+</body>
+</html>

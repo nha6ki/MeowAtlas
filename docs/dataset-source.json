@@ -1,0 +1,12 @@
+{
+  "record_url": "https://zenodo.org/records/4008297",
+  "api_url": "https://zenodo.org/api/records/4008297",
+  "checked_on": "2026-11-17",
+  "version": "1.0.2",
+  "license": {
+    "id": "cc-by-nc-4.0"
+  },
+  "access_right": "open",
+  "terms_of_use_excerpt": "The dataset is open access for scientific research and non-commercial purposes.",
+  "paper_license_note": "The 2021 paper names CC BY 4.0. This package follows the version-specific Zenodo metadata, CC BY-NC 4.0."
+}

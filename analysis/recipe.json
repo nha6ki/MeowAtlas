@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "name": "MeowAtlas fixed listening atlas",
+  "purpose": "Explore and audition the existing 440 recordings; no context or emotion prediction",
+  "candidate": "mel_n15_d0.1",
+  "display_seed": 42,
+  "audio_preprocessing": {
+    "sample_rate_hz": 8000,
+    "channels": 1,
+    "trim_each_end_seconds": 0.4,
+    "linear_fade_each_end_seconds": 0.05,
+    "additional_onset_alignment": false,
+    "time_warping": false,
+    "denoising": false,
+    "highpass_filter": false,
+    "peak_normalization": false
+  },
+  "mel": {
+    "sr": 8000,
+    "n_fft": 240,
+    "win_length": 240,
+    "hop_length": 30,
+    "window": "hann",
+    "center": true,
+    "pad_mode": "reflect",
+    "power": 2.0,
+    "n_mels": 40,
+    "fmin": 0.0,
+    "fmax": 4000.0,
+    "htk": false,
+    "norm": "slaney"
+  },
+  "features": {
+    "db_reference": "maximum power of each clip",
+    "amin": 1e-10,
+    "top_db": 80,
+    "normalization": "one population z-score across the entire unpadded spectrogram of each clip",
+    "padding": "right-pad standardized spectrogram with zeros to 854 frames; zero means standardized mean, not acoustic silence",
+    "flatten_order": "C",
+    "dtype": "float32",
+    "dimensions": 34160
+  },
+  "umap": {
+    "n_components": 2,
+    "n_neighbors": 15,
+    "min_dist": 0.1,
+    "metric": "euclidean",
+    "random_state": 42,
+    "transform_seed": 42,
+    "init": "spectral",
+    "n_epochs": 500,
+    "spread": 1.0,
+    "repulsion_strength": 1.0,
+    "negative_sample_rate": 5,
+    "learning_rate": 1.0,
+    "n_jobs": 1,
+    "compatibility_layout": true
+  },
+  "coordinate_postprocessing": "none",
+  "color": "recording_context",
+  "cat_filter": "subset of the fixed global coordinates; do not refit when filtering",
+  "retrieval": {
+    "metric": "euclidean",
+    "space": "original_mel_features",
+    "exclude_self": true,
+    "tie_break": "original row index",
+    "display_label": "特徴が近い音",
+    "map_proximity_label": "地図で近い音",
+    "perceptual_similarity_validated": false,
+    "displayed_candidates": 3,
+    "neighbors_in_reference": 10
+  },
+  "selection": {
+    "fitting_uses_recording_context": false,
+    "recipe_selection_uses_recording_context": false,
+    "basis": "Literature-informed features, conventional UMAP settings and prior label-free neighborhood/stability evaluation; not asserted to be universally optimal",
+    "additional_hyperparameter_search": false,
+    "per_cat_screening_used_to_select_recipe": false
+  },
+  "limits": [
+    "Clip duration, onset timing and background sound affect feature distances",
+    "Euclidean vector norms depend on the unpadded spectrogram duration",
+    "2D proximity and empty spaces do not establish perceptual similarity or distinct classes",
+    "Recording context is metadata, not an emotion or intention label"
+  ]
+}

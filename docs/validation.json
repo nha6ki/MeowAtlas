@@ -1,0 +1,93 @@
+{
+  "browser-verification.json": {
+    "experience": {
+      "initial_map": true,
+      "selection_and_playback": true,
+      "credits_link": true
+    },
+    "analysis": {
+      "fixed_coordinates_exact": true,
+      "ab_selection": true,
+      "no_selection_scroll": true,
+      "mutually_exclusive_playback": true,
+      "breed_filters": true,
+      "candidates": true,
+      "methods_static": true
+    },
+    "mobile": {
+      "width": 320,
+      "horizontal_overflow": false
+    },
+    "errors": [],
+    "failed_requests": [],
+    "external_runtime_requests": [],
+    "url_prefix": "/MeowAtlas/",
+    "status": "passed"
+  },
+  "portfolio-verification.json": {
+    "status": "passed",
+    "pages": [
+      {
+        "name": "desktop",
+        "overflow": false,
+        "images_decoded": true,
+        "links_valid": true,
+        "errors": []
+      },
+      {
+        "name": "mobile",
+        "overflow": false,
+        "images_decoded": true,
+        "links_valid": true,
+        "errors": []
+      }
+    ],
+    "homepage_card": true,
+    "projects_card": true,
+    "remote_deployment": false
+  },
+  "preservation-verification.json": {
+    "status": "passed",
+    "original_experience_unchanged": true,
+    "runtime_logic_unchanged": true,
+    "all_data_audio_spectra_photos_unchanged": true,
+    "ui_additions": [
+      "Experience about-dialog credit link",
+      "Analysis footer credit link",
+      "Standalone credits page"
+    ],
+    "source_scope": "final local demo",
+    "publication_performed": false
+  },
+  "analysis_reproduction": {
+    "clips": 440,
+    "feature_shape": [
+      440,
+      34160
+    ],
+    "features_sha256": "3911365501ac17ca198b52434ba9ef73c5d0dd944863e24c301f7353749d9b18",
+    "features_exact": true,
+    "audio_exact": true,
+    "fixed_coordinates_copied": true,
+    "model_refitted": false,
+    "site_modified": false
+  },
+  "asset_check": {
+    "status": "passed",
+    "runtime_files": 915,
+    "recordings": 440,
+    "cats": 21,
+    "photos": 21,
+    "frozen_media_exact": true,
+    "rankings_complete": true,
+    "local_links_valid": true,
+    "site_bytes": 23158795,
+    "external_runtime_assets": false
+  },
+  "checked_on": "2026-11-17",
+  "publication_performed": false,
+  "code_sha256": {
+    "scripts/verify_release.py": "01728b226a47ad5e85db318d0630a25f67ac60e64b82417b5f20555b9dd35cc6",
+    "analysis/reproduce.py": "122e9a51a6a732aaeba4e8f68c3907036ff80cc31556ebd987a59c38daceac09"
+  }
+}

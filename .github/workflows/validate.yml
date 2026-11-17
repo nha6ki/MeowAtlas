@@ -1,0 +1,23 @@
+name: Validate MeowAtlas
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check release assets and local links
+        run: python scripts/verify_release.py
+      - name: Check JavaScript syntax
+        run: |
+          for file in site/app.js site/experience.js site/breed-photos.js site/data.js; do
+            node --check "$file"
+          done
